@@ -100,26 +100,47 @@ const perguntas = [
       correta: 0 // 1980
     },
   ];
-  
+  // perguntas e respostas
   
   const quiz = document.querySelector('#quiz')
   const template = document.querySelector('template')
+  // puxando do html para o js
   
+  const corretas = new Set()
+  const totalDePerguntas = perguntas.length
+  const mostrarTotal = document.querySelector('#acertos span')
   
+  //looping que passa por todos os itens acima para selecionar as repostas
   for(const item of perguntas) {
     const quizItem = template.content.cloneNode(true)
     quizItem.querySelector("h3").textContent =  item.pergunta
   
+  // looping aninhado que cola as respostas
     for (let resposta of item.resposta) {
       const dt = quizItem.querySelector('dl dt').cloneNode(true)
       dt.querySelector('span').textContent = resposta
+      dt.querySelector('input').setAttribute('name', 'pergunta-' + perguntas.indexOf(item))
+      dt.querySelector('input').value = item.resposta.indexOf(resposta)
+  
+      dt.querySelector("input").onchange = (event) => {
+        const estaCorreta = event.target.value == item.correta
+  
+        corretas.delete(item)
+        if(estaCorreta) {
+          corretas.add(item)
+        }
+        mostrarTotal.textContent = corretas.size + ' de ' + totalDePerguntas
+      }
   
       quizItem.querySelector('dl').appendChild(dt)
     }
   
+  //tira o "Resposta A" da tela
     quizItem.querySelector('dl dt').remove()
-    
+  
+  //mostra tudo na tela
     quiz.appendChild(quizItem)
   }
+  
   
   
